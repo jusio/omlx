@@ -326,6 +326,10 @@ class SchedulerConfig:
     gc_cleanup_interval: int = 0  # Steps between gc.collect() calls (0=disabled)
     mlx_cache_cleanup_interval: int = 512  # Steps between mx.clear_cache() calls
 
+    # Throttle: fraction of time the engine spends doing GPU work (1.0 = no throttle)
+    # At 0.5, the engine sleeps for the same duration as each step, halving bandwidth usage.
+    throttle: float = 1.0
+
 
 @dataclass
 class SchedulerOutput:

@@ -468,6 +468,16 @@ Example directory structure:
         default=None,
         help="Max requests processed simultaneously. Higher values increase throughput but use more memory. (default: 8)",
     )
+    serve_parser.add_argument(
+        "--throttle",
+        type=float,
+        default=None,
+        help=(
+            "GPU duty cycle: 1.0 = full speed (default), 0.5 = 50%% memory bandwidth. "
+            "After each generation step the engine sleeps for step_time * (1/throttle - 1), "
+            "reducing memory bandwidth at the cost of lower token throughput."
+        ),
+    )
 
     # paged SSD cache options
     serve_parser.add_argument(

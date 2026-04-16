@@ -214,7 +214,13 @@ class ModelSettings:
 class SchedulerSettings:
     """Scheduler configuration settings."""
 
+<<<<<<< Updated upstream
     max_concurrent_requests: int = 8
+=======
+    max_num_seqs: int = 8
+    completion_batch_size: int = 8
+    throttle: float = 1.0  # GPU duty cycle: 1.0 = full speed, 0.5 = half bandwidth
+>>>>>>> Stashed changes
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
@@ -223,6 +229,7 @@ class SchedulerSettings:
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> SchedulerSettings:
         """Create from dictionary."""
+<<<<<<< Updated upstream
         # Backwards compatibility: migrate old keys
         value = data.get("max_concurrent_requests")
         if value is None:
@@ -232,6 +239,13 @@ class SchedulerSettings:
         if value is None:
             value = 8
         return cls(max_concurrent_requests=value)
+=======
+        return cls(
+            max_num_seqs=data.get("max_num_seqs", 8),
+            completion_batch_size=data.get("completion_batch_size", 8),
+            throttle=data.get("throttle", 1.0),
+        )
+>>>>>>> Stashed changes
 
 
 @dataclass
@@ -893,7 +907,13 @@ class GlobalSettings:
             hasattr(args, "max_concurrent_requests")
             and args.max_concurrent_requests is not None
         ):
+<<<<<<< Updated upstream
             self.scheduler.max_concurrent_requests = args.max_concurrent_requests
+=======
+            self.scheduler.completion_batch_size = args.completion_batch_size
+        if hasattr(args, "throttle") and args.throttle is not None:
+            self.scheduler.throttle = args.throttle
+>>>>>>> Stashed changes
 
         # Cache settings
         if hasattr(args, "cache_enabled") and args.cache_enabled is not None:
@@ -1156,6 +1176,7 @@ class GlobalSettings:
             max_num_seqs=self.scheduler.max_concurrent_requests,
             completion_batch_size=self.scheduler.max_concurrent_requests,
             initial_cache_blocks=self.cache.initial_cache_blocks,
+            throttle=self.scheduler.throttle,
         )
 
     def to_dict(self) -> dict[str, Any]:

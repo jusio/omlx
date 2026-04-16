@@ -56,6 +56,7 @@ class EngineConfig:
     scheduler_config: Optional[SchedulerConfig] = None
     step_interval: float = 0.001  # 1ms between steps
     stream_interval: int = 1  # Tokens to batch before streaming (1=every token)
+    throttle: float = 1.0  # GPU duty cycle: 1.0 = full speed, 0.5 = 50% bandwidth
 
 
 class EngineCore:
@@ -168,14 +169,19 @@ class EngineCore:
         step_interval = self.config.step_interval
         stream_interval = self.config.stream_interval
         use_simple_streaming = (stream_interval == 1)
+        throttle = self.config.throttle
 
         while self._running:
             try:
                 if self.scheduler.has_requests():
+                    _step_start = loop.time() if throttle < 1.0 else 0.0
                     output = await loop.run_in_executor(
                         self._mlx_executor, self.scheduler.step
                     )
                     self._steps_executed += 1
+                    if throttle < 1.0:
+                        _step_time = loop.time() - _step_start
+                        await asyncio.sleep(_step_time * (1.0 / throttle - 1.0))
 
                     # Fast path: distribute outputs to collectors
                     outputs = output.outputs

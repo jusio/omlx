@@ -237,6 +237,7 @@ class BatchedEngine(BaseEngine):
             model_name=self._model_name,
             scheduler_config=scheduler_config,
             stream_interval=self._stream_interval,
+            throttle=scheduler_config.throttle,
         )
 
         # Create async engine
